@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>漢字暗記ノート</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#0284c7;--sky2:#0ea5e9;--sky-light:#e0f2fe;
+  --rose:#e11d48;--emerald:#059669;--emerald-light:#ecfdf5;
+  --pink:#b4124c;--pink2:#ec4899;--pink-light:#fdf2f8;--pink-border:#fbcfe8;
+  --s950:#020617;--s900:#0f172a;--s800:#1e293b;--s700:#334155;
+  --s600:#475569;--s500:#64748b;--s400:#94a3b8;--s300:#cbd5e1;
+  --s100:#f1f5f9;--s50:#f8fafc;--white:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--s50);color:var(--s950);min-height:100vh;}
+.app{max-width:672px;margin:0 auto;padding:12px;min-height:100vh;display:flex;flex-direction:column;}
+@media(min-width:768px){.app{padding:32px;}}
+
+/* Header */
+header{margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;}
+.hl h1{font-size:1.4rem;font-weight:400;display:flex;align-items:center;gap:8px;color:var(--s950);}
+@media(min-width:768px){.hl h1{font-size:1.75rem;}}
+.hl h1 .ico{color:var(--sky);}
+.hl p{color:var(--sky);font-size:.85rem;margin-top:2px;}
+@media(min-width:768px){.hl p{font-size:1rem;}}
+.hbtns{display:flex;gap:8px;}
+.hbtn{padding:10px;border-radius:16px;border:none;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.hbtn.map{background:var(--white);color:#15803d;border:1px solid #bbf7d0;box-shadow:0 2px 6px rgba(0,0,0,.08);font-size:18px;}
+.hbtn.map.on{background:#16a34a;color:#fff;border-color:#16a34a;}
+.hbtn.dash{background:var(--white);color:var(--sky);border:1px solid var(--sky-light);box-shadow:0 2px 6px rgba(0,0,0,.08);}
+.hbtn.dash.on{background:var(--sky);color:#fff;border-color:var(--sky);}
+
+/* Buttons */
+.btn{width:100%;padding:24px;border-radius:20px;font-weight:500;font-size:1.3rem;border:1px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;margin-bottom:12px;font-family:'Noto Sans JP',sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.08);}
+@media(min-width:768px){.btn{padding:32px;font-size:1.5rem;border-radius:24px;}}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-t{background:#88b3dc;color:#fff;border-color:#88b3dc;}
+.btn-t:hover:not(:disabled){background:#729ec8;}
+.btn-t.resume{background:#fcd05c;color:#333;border-color:#fcd05c;}
+.btn-t.resume:hover{background:#ffe552;}
+.btn-r{background:#d3e9ff;color:#333;border-color:#88b3dc;}
+.btn-r:hover:not(:disabled){background:#c4e1ff;}
+.btn-r.resume{background:#fcd05c;color:#333;border-color:#fcd05c;}
+.btn-r.resume:hover{background:#ffe552;}
+
+/* Card */
+.card{background:var(--white);border-radius:20px;padding:20px;border:1px solid #bae6fd;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px;}
+@media(min-width:768px){.card{padding:32px;border-radius:24px;}}
+
+/* Progress */
+.pw{height:16px;background:var(--s100);border-radius:99px;overflow:hidden;}
+@media(min-width:768px){.pw{height:24px;}}
+.pf{height:100%;background:var(--sky);border-radius:99px;transition:width .6s;}
+.pf.pink{background:#ec4899;}
+
+/* Add btn */
+.btn-add{width:100%;background:var(--white);color:#666;border:1px solid #ddd;padding:20px;border-radius:16px;font-weight:500;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);font-family:'Noto Sans JP',sans-serif;}
+.btn-add:hover{background:var(--s50);}
+
+/* Form */
+.fb{background:var(--white);border-radius:24px;padding:32px;border:1px solid var(--sky-light);box-shadow:0 8px 24px rgba(0,0,0,.08);margin-bottom:16px;}
+.fb.hidden{display:none;}
+.ftitle{font-size:1.2rem;font-weight:500;margin-bottom:24px;display:flex;align-items:center;gap:8px;color:var(--s900);}
+label{font-size:.85rem;font-weight:500;color:var(--s400);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:8px;}
+input[type="text"]{width:100%;padding:20px;background:rgba(14,165,233,.04);border:1px solid var(--sky-light);border-radius:16px;font-size:1.5rem;font-weight:500;font-family:'Noto Sans JP',sans-serif;outline:none;transition:all .2s;color:var(--s900);margin-bottom:24px;}
+input[type="text"]:focus{border-color:var(--sky2);box-shadow:0 0 0 4px rgba(14,165,233,.15);}
+input.ki{font-size:2.5rem;font-weight:900;color:var(--sky);border:2px solid #bae6fd;}
+.fa{display:flex;gap:16px;}
+.bsave{flex:1;padding:20px;background:var(--sky);color:#fff;border:none;border-radius:16px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'Noto Sans JP',sans-serif;transition:background .2s;font-size:1.2rem;box-shadow:0 6px 20px rgba(2,132,199,.3);}
+.bsave:hover{background:#0369a1;}
+.bcancel{padding:20px 32px;background:var(--s100);color:var(--s700);border:none;border-radius:16px;font-weight:900;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:1.1rem;}
+.bcancel:hover{background:#e2e8f0;}
+
+/* List toggle */
+.ltgl{text-align:center;margin-bottom:8px;}
+.ltgl button{background:none;border:none;cursor:pointer;font-size:.75rem;font-weight:700;color:var(--s400);display:inline-flex;align-items:center;gap:4px;transition:color .2s;font-family:'Noto Sans JP',sans-serif;}
+.ltgl button:hover{color:var(--sky2);}
+
+/* Quick stats */
+.qs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-top:16px;}
+.qsb{background:var(--white);padding:16px 12px;border-radius:16px;border:1px solid #bae6fd;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.06);}
+@media(min-width:768px){.qsb{padding:20px;border-radius:20px;}}
+.qsl{font-size:.6rem;font-weight:900;color:var(--s500);text-transform:uppercase;letter-spacing:.07em;}
+@media(min-width:768px){.qsl{font-size:.75rem;}}
+.qsv{font-size:1.3rem;font-weight:900;margin-top:4px;color:var(--s950);}
+@media(min-width:768px){.qsv{font-size:1.5rem;}}
+.qsv.bad{color:var(--rose);} .qsv.blu{color:var(--sky);}
+
+/* Kanji list */
+.kl{display:flex;flex-direction:column;gap:12px;margin-top:10px;}
+.ki2{background:var(--white);padding:20px;border-radius:16px;border:2px solid #bae6fd;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.ki2.bad{border-color:#fecdd3;background:#fff8f9;}
+.kinfo{flex:1;}
+.kmain{display:flex;align-items:center;gap:12px;}
+.kchar{font-size:1.9rem;font-weight:900;color:var(--s950);}
+.kread{font-size:1rem;color:var(--s500);font-weight:700;}
+.kstats{display:flex;gap:16px;margin-top:12px;}
+.kok{font-size:.75rem;font-weight:900;color:var(--emerald);display:flex;align-items:center;gap:4px;}
+.kng{font-size:.75rem;font-weight:900;color:var(--rose);display:flex;align-items:center;gap:4px;}
+.kact{display:flex;align-items:center;gap:4px;}
+.bbad{background:#fee2e2;color:var(--rose);font-size:.65rem;font-weight:700;padding:4px 10px;border-radius:99px;text-transform:uppercase;margin-right:4px;}
+.ibtn{background:none;border:none;cursor:pointer;padding:8px;color:#cbd5e1;transition:color .2s;}
+.ibtn:hover.ed{color:var(--sky2);} .ibtn:hover.dl{color:var(--rose);}
+.kempty{text-align:center;padding:48px;color:var(--s400);font-style:italic;}
+
+/* Test */
+.thdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
+.bbk{background:none;border:none;cursor:pointer;color:var(--s500);display:flex;align-items:center;gap:4px;font-size:.9rem;font-family:'Noto Sans JP',sans-serif;transition:color .2s;}
+.bbk:hover{color:var(--s900);}
+.pg{display:flex;align-items:center;gap:12px;}
+.pm{width:128px;height:8px;background:var(--sky-light);border-radius:99px;overflow:hidden;}
+.pmf{height:100%;background:var(--sky2);border-radius:99px;transition:width .4s;}
+.plbl{font-size:.875rem;font-weight:900;color:var(--s600);}
+.tc{background:var(--white);border-radius:24px;border:1px solid #e0f2fe;box-shadow:0 20px 40px rgba(2,132,199,.1);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px;text-align:center;min-height:300px;position:relative;overflow:hidden;}
+.tc::before{content:'';position:absolute;inset:0;background-image:linear-gradient(#0284c7 1px,transparent 1px);background-size:100% 40px;opacity:.12;pointer-events:none;}
+@media(min-width:768px){.tc{padding:32px;}}
+.thint{font-size:.875rem;font-weight:900;color:var(--sky2);text-transform:uppercase;letter-spacing:.12em;margin-bottom:20px;}
+.trd{font-size:2.25rem;font-weight:900;color:var(--sky);line-height:1.5;margin-bottom:32px;}
+@media(min-width:768px){.trd{font-size:4.5rem;}}
+.trd .ul{text-decoration:underline;text-decoration-color:#7dd3fc;text-underline-offset:10px;text-decoration-thickness:3px;}
+.bshow{padding:20px 48px;background:var(--sky);color:#fff;border:none;border-radius:99px;font-size:1.3rem;font-weight:900;cursor:pointer;box-shadow:0 8px 24px rgba(2,132,199,.35);transition:all .2s;font-family:'Noto Sans JP',sans-serif;}
+.bshow:hover{background:#0369a1;transform:translateY(-1px);}
+.ak{font-size:4.5rem;font-weight:900;color:var(--s950);line-height:1.1;margin-bottom:12px;font-family:'Noto Serif JP',serif;}
+@media(min-width:768px){.ak{font-size:6rem;}}
+.ar{font-size:1.3rem;color:var(--s600);font-weight:700;margin-bottom:24px;}
+@media(min-width:768px){.ar{font-size:1.5rem;}}
+.ar .ul{text-decoration:underline;text-decoration-color:#7dd3fc;text-underline-offset:8px;text-decoration-thickness:3px;}
+.abtns{display:flex;gap:16px;width:100%;}
+.bw,.bc{flex:1;padding:20px;border-radius:16px;font-weight:900;border:4px solid;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;font-family:'Noto Sans JP',sans-serif;transition:all .2s;font-size:1rem;box-shadow:0 4px 12px rgba(0,0,0,.08);}
+.bw{background:#fff1f2;color:#be123c;border-color:#fecdd3;} .bw:hover{background:#ffe4e6;}
+.bc{background:var(--emerald-light);color:#065f46;border-color:#a7f3d0;} .bc:hover{background:#d1fae5;}
+.bw svg,.bc svg{width:32px;height:32px;}
+
+/* Result */
+.res{text-align:center;padding:48px 0;}
+.rej{font-size:5rem;animation:bo 1s infinite;margin-bottom:16px;}
+@keyframes bo{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+.ret{font-size:3rem;font-weight:900;color:var(--s950);margin-bottom:8px;}
+.res2{color:var(--s600);font-size:1.3rem;font-weight:700;margin-bottom:32px;}
+.recard{background:var(--white);padding:40px;border-radius:40px;box-shadow:0 20px 40px rgba(14,165,233,.12);border:2px solid #bae6fd;max-width:380px;margin:0 auto 32px;}
+.relbl{font-size:.875rem;font-weight:900;color:var(--s500);text-transform:uppercase;letter-spacing:.1em;margin-bottom:20px;}
+.rems{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin-top:8px;}
+.remb{background:#fff1f2;color:#be123c;padding:12px 20px;border-radius:16px;font-weight:900;font-size:1.5rem;border:2px solid #fecdd3;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.perf{padding:16px 0;}
+.perf .big{font-size:1.5rem;font-weight:900;color:var(--emerald);display:block;margin-bottom:6px;}
+.perf .sm{font-size:1rem;font-weight:700;color:var(--s500);}
+.bbr{padding:24px 80px;background:var(--sky);color:#fff;border:none;border-radius:40px;font-size:1.3rem;font-weight:900;cursor:pointer;box-shadow:0 8px 24px rgba(2,132,199,.3);transition:all .2s;font-family:'Noto Sans JP',sans-serif;}
+.bbr:hover{background:#0369a1;}
+
+/* Dashboard */
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.dc{background:var(--white);padding:32px;border-radius:24px;border:2px solid #bae6fd;box-shadow:0 2px 6px rgba(0,0,0,.06);}
+.dct{font-size:.875rem;font-weight:900;color:var(--s500);text-transform:uppercase;letter-spacing:.1em;text-align:center;margin-bottom:12px;}
+.pw2{position:relative;width:160px;height:160px;margin:0 auto;}
+.pl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.pl .big{font-size:2.5rem;font-weight:900;color:var(--s950);}
+.pl .sm{font-size:.75rem;font-weight:900;color:var(--s500);text-transform:uppercase;letter-spacing:.1em;}
+.mrow{display:flex;align-items:center;justify-content:space-between;font-size:.875rem;margin-bottom:12px;}
+.mdot{width:8px;height:8px;border-radius:50%;margin-right:8px;display:inline-block;}
+.mn{color:var(--s500);display:flex;align-items:center;}
+.mv{font-weight:700;color:var(--s900);}
+.topcard{background:var(--white);padding:32px;border-radius:24px;border:2px solid #bae6fd;margin-bottom:16px;box-shadow:0 2px 6px rgba(0,0,0,.06);}
+.toph{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
+.topht{font-size:.875rem;font-weight:900;color:var(--s600);text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:8px;}
+.trow{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+.rb{width:24px;height:24px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;}
+.r1{background:var(--rose);color:#fff;}.r2{background:#f97316;color:#fff;}.r3{background:#f59e0b;color:#fff;}.rn{background:var(--s100);color:var(--s400);}
+.tk{font-size:1.5rem;font-weight:700;flex:1;}
+.bw2{display:flex;align-items:center;gap:4px;}
+.bb{width:96px;height:8px;background:#fee2e2;border-radius:99px;overflow:hidden;}
+.bf{height:100%;background:var(--rose);border-radius:99px;transition:width .6s;}
+.bc2{font-size:.875rem;font-weight:700;color:var(--rose);width:24px;text-align:right;}
+.rvc{background:#fff1f2;padding:24px;border-radius:24px;border:1px solid #fecdd3;margin-bottom:16px;}
+.rvt{font-size:.75rem;font-weight:700;color:var(--rose);text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:6px;margin-bottom:14px;}
+.rvi{display:flex;flex-wrap:wrap;gap:8px;}
+.rit{background:#fff;padding:8px 12px;border-radius:12px;border:1px solid #fecdd3;display:flex;align-items:center;gap:6px;}
+.rk{font-weight:700;color:var(--s900);}
+.rbg{font-size:.6rem;background:#fee2e2;color:var(--rose);padding:2px 6px;border-radius:6px;font-weight:700;}
+.bdtest{width:100%;padding:24px;background:var(--sky);color:#fff;border:none;border-radius:40px;font-size:1.3rem;font-weight:900;cursor:pointer;box-shadow:0 8px 24px rgba(2,132,199,.25);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:16px;font-family:'Noto Sans JP',sans-serif;}
+.bdtest:hover:not(:disabled){background:#0369a1;} .bdtest:disabled{opacity:.5;cursor:not-allowed;}
+
+/* Map */
+.mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.mclbl{font-size:.75rem;font-weight:500;color:var(--s400);text-transform:uppercase;}
+.mcval{font-size:1.1rem;font-weight:500;color:var(--pink);}
+.mcon{position:relative;width:100%;height:450px;background:rgba(253,242,248,.35);border-radius:40px;border:1px solid var(--pink-border);overflow:hidden;touch-action:none;user-select:none;margin-bottom:16px;}
+.mdbg{position:absolute;inset:0;opacity:.05;pointer-events:none;background-image:radial-gradient(#ec4899 1px,transparent 1px);background-size:30px 30px;}
+.petal{position:absolute;pointer-events:none;user-select:none;z-index:1;animation:fp linear infinite;opacity:0;}
+@keyframes fp{0%{transform:translateY(-20px) rotate(0deg);opacity:0;}10%{opacity:.6;}80%{opacity:.5;}100%{transform:translateY(480px) rotate(720deg) translateX(60px);opacity:0;}}
+.mzoom{position:absolute;top:16px;right:16px;z-index:20;display:flex;flex-direction:column;gap:8px;}
+.zbtn{width:48px;height:48px;background:rgba(255,255,255,.9);border:1px solid var(--pink-border);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900;color:#be185d;transition:all .2s;}
+.zbtn:hover{background:#fff;} .zbtn.rst{font-size:.65rem;font-weight:900;color:#f9a8d4;}
+.mlbl{position:absolute;top:24px;left:24px;z-index:10;pointer-events:none;}
+.mlbl h3{font-size:1.3rem;font-weight:500;color:#333;display:flex;align-items:center;gap:6px;}
+.mlbl p{font-size:.875rem;color:var(--s500);margin-top:2px;}
+.mleg{position:absolute;bottom:16px;right:16px;background:rgba(255,255,255,.97);border:2px solid var(--pink-border);border-radius:16px;padding:14px 16px;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.lrow{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:.75rem;}
+.lrow:last-child{margin-bottom:0;}
+.ldot{width:16px;height:16px;border-radius:4px;}
+.mdrag{position:absolute;cursor:grab;z-index:10;transform-origin:0 0;}
+.mdrag:active{cursor:grabbing;}
+.pb{position:absolute;border-radius:16px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.75rem;width:40px;height:40px;cursor:pointer;border:2px solid;transition:transform .15s,box-shadow .15s;font-family:'Noto Sans JP',sans-serif;text-align:center;line-height:1.2;flex-direction:column;}
+.pb.ul{background:#F7D6E0;color:#333;border-color:#f9a8d4;box-shadow:0 2px 8px rgba(249,168,212,.5);}
+.pb.ul:hover{transform:scale(1.15);box-shadow:0 4px 16px rgba(249,168,212,.7);}
+.pb.lk{background:#DDEED8;color:rgba(51,51,51,.6);border-color:#d1d5db;opacity:.6;cursor:default;}
+.pb.hk{width:84px;height:84px;font-size:1.2rem;border-radius:20px;}
+.pov{position:absolute;bottom:24px;left:24px;right:24px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);color:#333;padding:32px;border-radius:48px;box-shadow:0 12px 40px rgba(0,0,0,.15);z-index:30;border:2px solid var(--pink-border);}
+.pov.hidden{display:none;}
+.povh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;}
+.povlbl{font-size:.75rem;font-weight:500;opacity:.8;text-transform:uppercase;letter-spacing:.1em;color:var(--pink);display:block;margin-bottom:4px;}
+.povn{font-size:2.5rem;font-weight:500;color:var(--s950);font-family:'Noto Serif JP',serif;}
+.povk{font-size:.75rem;font-weight:500;color:var(--pink);opacity:.8;}
+.povc{font-size:1.9rem;font-weight:500;color:var(--s800);}
+.povck{font-size:.7rem;color:var(--s500);}
+.sbox{background:rgba(253,242,248,.7);border:1px solid var(--pink-border);border-radius:24px;padding:20px;}
+.sn{font-size:1.5rem;font-weight:500;color:var(--s900);}
+.pcls{position:absolute;top:-16px;right:-16px;background:#fff;color:var(--pink);border:2px solid var(--pink-border);border-radius:14px;width:40px;height:40px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(236,72,153,.25);font-size:1.2rem;transition:all .2s;}
+.pcls:hover{transform:scale(1.1);}
+.nu{background:var(--pink-light);padding:32px;border-radius:40px;border:1px solid var(--pink-border);margin-bottom:16px;}
+.nut{font-size:1rem;font-weight:500;color:#9d174d;display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.nubw{height:16px;background:#fff;border-radius:99px;overflow:hidden;border:1px solid var(--pink-border);box-shadow:inset 0 2px 4px rgba(0,0,0,.05);}
+.nub{height:100%;background:#ec4899;border-radius:99px;transition:width .6s;}
+.num{font-size:.75rem;color:#be185d;margin-top:10px;text-align:center;font-weight:500;}
+
+/* Modals */
+.mov{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.4);backdrop-filter:blur(4px);}
+.mov.hidden{display:none;}
+.mbox{background:#fff;border-radius:28px;padding:24px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.15);position:relative;animation:pi .2s ease;}
+@keyframes pi{from{opacity:0;transform:scale(.92) translateY(16px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.mhd{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.mic{display:inline-flex;padding:8px;border-radius:12px;}
+.mic.danger{background:#fee2e2;color:var(--rose);} .mic.info{background:var(--sky-light);color:var(--sky);}
+.mtit{font-size:1.2rem;font-weight:700;color:var(--s900);}
+.mmsg{color:var(--s700);line-height:1.6;margin-bottom:20px;font-size:.9rem;}
+.mbtns{display:flex;gap:10px;}
+.mca{flex:1;padding:12px;border-radius:12px;border:none;background:none;color:var(--s500);font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:.9rem;}
+.mca:hover{background:var(--s100);}
+.mco{flex:1;padding:12px;border-radius:12px;border:none;font-weight:900;cursor:pointer;color:#fff;font-family:'Noto Sans JP',sans-serif;font-size:.9rem;}
+.mco.danger{background:var(--rose);box-shadow:0 4px 12px rgba(225,29,72,.3);} .mco.danger:hover{background:#be123c;}
+.mco.info{background:var(--sky);box-shadow:0 4px 12px rgba(2,132,199,.3);} .mco.info:hover{background:#0369a1;}
+
+/* Unlock modal */
+.uov{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.4);backdrop-filter:blur(4px);}
+.uov.hidden{display:none;}
+.ubox{background:#fff;border-radius:48px;width:100%;max-width:380px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.18);position:relative;animation:pi .3s ease;}
+.udeco{position:absolute;top:0;left:0;right:0;height:128px;background:linear-gradient(135deg,#f9a8d4,#f43f5e);opacity:.2;}
+.ucnt{padding:40px 28px;text-align:center;position:relative;}
+.uico{display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;background:#fce7f3;border-radius:50%;color:#ec4899;font-size:2.5rem;margin-bottom:16px;}
+.usub{font-size:.875rem;font-weight:900;color:#ec4899;text-transform:uppercase;letter-spacing:.15em;margin-bottom:12px;}
+.uname{font-size:3rem;font-weight:900;color:var(--s950);display:block;font-family:'Noto Serif JP',serif;}
+.ukana{font-size:.9rem;opacity:.8;color:#ec4899;font-weight:900;}
+.ucaplbl{font-size:.7rem;font-weight:900;color:#ec4899;opacity:.7;text-transform:uppercase;margin-top:12px;display:block;}
+.ucap{font-size:1.5rem;font-weight:700;color:var(--s900);display:block;}
+.ucapk{font-size:.75rem;color:var(--s500);}
+.uspbox{background:rgba(253,242,248,.7);border:2px solid var(--pink-border);border-radius:32px;padding:20px;margin:16px 0;}
+.usplbl{font-size:.7rem;font-weight:900;color:#ec4899;opacity:.8;text-transform:uppercase;margin-bottom:6px;display:block;}
+.usp{font-size:1.5rem;font-weight:900;color:var(--s900);}
+.bmap{width:100%;padding:24px;background:#d4145a;color:#fff;border:none;border-radius:40px;font-size:1.1rem;font-weight:900;cursor:pointer;box-shadow:0 8px 24px rgba(212,20,90,.35);transition:all .2s;font-family:'Noto Sans JP',sans-serif;}
+.bmap:hover{background:#be123c;}
+.sk1{position:absolute;top:-16px;left:-16px;font-size:2rem;opacity:.4;transform:rotate(12deg);}
+.sk2{position:absolute;top:40px;right:-16px;font-size:1.5rem;opacity:.4;transform:rotate(-12deg);}
+.sk3{position:absolute;bottom:40px;left:-24px;font-size:1.5rem;opacity:.4;transform:rotate(45deg);}
+
+.screen{animation:fi .25s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.hidden{display:none!important;}
+svg{display:inline-block;vertical-align:middle;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <div class="hl">
+    <h1><svg class="ico" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>漢字暗記ノート</h1>
+    <p>静かに、深く。集中して取り組みましょう。</p>
+  </div>
+  <div class="hbtns">
+    <button class="hbtn map" id="btnMap" onclick="toggleMap()">🗺️</button>
+    <button class="hbtn dash" id="btnDash" onclick="toggleDash()">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- LIST -->
+<div id="sL" class="screen">
+  <button class="btn btn-t" id="btnT" onclick="startTest(false)">今日のテスト</button>
+  <button class="btn btn-r" id="btnR" onclick="startTest(true)" disabled>
+    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>復習
+  </button>
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h2 style="font-size:1rem;font-weight:400;color:var(--s800);display:flex;align-items:center;gap:8px;">
+        <svg width="20" height="20" fill="none" stroke="#6ee7b7" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>今日の目標達成
+      </h2>
+      <span style="font-size:.9rem;font-weight:400;color:#6ee7b7;" id="dLbl">0 / 20</span>
+    </div>
+    <div class="pw"><div class="pf" id="dBar" style="width:0%"></div></div>
+    <p style="font-size:.8rem;color:var(--s500);text-align:center;margin-top:12px;font-weight:700;" id="dMsg">あと 20 問で目標達成です。</p>
+  </div>
+
+  <button class="btn-add" id="btnA" onclick="toggleForm()">
+    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>漢字登録
+  </button>
+
+  <div class="fb hidden" id="formBox">
+    <div class="ftitle" id="ftitle">
+      <svg width="24" height="24" fill="none" stroke="var(--sky)" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>漢字登録
+    </div>
+    <label>例題（問題文）</label>
+    <input type="text" id="iS" placeholder="例: びょうきがなおる">
+    <label>漢字にしたい部分</label>
+    <input type="text" id="iT" placeholder="例: びょうき">
+    <label>解答（漢字）</label>
+    <input type="text" id="iK" class="ki" placeholder="例: 病気">
+    <div class="fa">
+      <button class="bsave" id="bSub" onclick="submitForm()">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>保存する
+      </button>
+      <button class="bcancel hidden" id="bCE" onclick="cancelEdit()">キャンセル</button>
+    </div>
+  </div>
+
+  <div class="ltgl">
+    <button onclick="toggleList()" id="bLT">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>登録済み漢字を確認・編集
+    </button>
+  </div>
+  <div id="listWrap" class="hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 8px;margin-bottom:8px;">
+      <h2 style="font-weight:700;color:var(--s600);font-size:.95rem;" id="lHdr">登録済み (0)</h2>
+      <button onclick="resetStats()" id="bRS" class="hidden" style="font-size:.75rem;color:var(--s400);background:none;border:none;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">統計をリセット</button>
+    </div>
+    <div class="kl" id="kList"></div>
+  </div>
+  <div class="qs">
+    <div class="qsb"><div class="qsl">登録数</div><div class="qsv" id="sTot">0</div></div>
+    <div class="qsb"><div class="qsl">苦手</div><div class="qsv bad" id="sBad">0</div></div>
+    <div class="qsb"><div class="qsl">正解率</div><div class="qsv blu" id="sAcc">0%</div></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="sD" class="screen hidden">
+  <div class="dg">
+    <div class="dc" style="display:flex;flex-direction:column;align-items:center;">
+      <div class="dct">総合正解率</div>
+      <div class="pw2"><canvas id="pie" width="160" height="160"></canvas><div class="pl"><span class="big" id="pieLbl">0%</span><span class="sm">正解率</span></div></div>
+    </div>
+    <div class="dc"><div class="dct">習得状況</div><div id="mlist"></div></div>
+  </div>
+  <div class="topcard">
+    <div class="toph">
+      <div class="topht"><svg width="20" height="20" fill="none" stroke="var(--sky)" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>間違いの多い漢字 TOP 5</div>
+      <span style="font-size:.75rem;color:var(--s400);">ミス回数</span>
+    </div>
+    <div id="tlist"></div>
+  </div>
+  <div class="rvc">
+    <div class="rvt"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>要復習リスト</div>
+    <div class="rvi" id="rvlist"></div>
+  </div>
+  <button class="bdtest" onclick="startTest(false)" id="bDT" disabled>
+    <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>今日のテストを始める
+  </button>
+</div>
+
+<!-- MAP -->
+<div id="sM" class="screen hidden">
+  <div class="mhdr">
+    <button class="bbk" onclick="setMode('list')"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>一覧に戻る</button>
+    <div style="text-align:right;"><div class="mclbl">日本地図の開拓</div><div class="mcval" id="mCnt">0 / 47 都道府県</div></div>
+  </div>
+  <div class="mcon" id="mCon">
+    <div class="mdbg"></div>
+    <div id="petalBox"></div>
+    <div class="mlbl">
+      <h3><svg width="20" height="20" fill="none" stroke="#b4124c" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>日本地図</h3>
+      <p>ドラッグで移動、ピンチやボタンで拡大！</p>
+    </div>
+    <div class="mzoom">
+      <button class="zbtn" onclick="mZoom(.1)">+</button>
+      <button class="zbtn" onclick="mZoom(-.1)">-</button>
+      <button class="zbtn rst" onclick="mReset()">Reset</button>
+    </div>
+    <div id="mDrag" class="mdrag"></div>
+    <div class="mleg">
+      <div class="lrow"><div class="ldot" style="background:#F7D6E0;border:1px solid #f9a8d4;"></div><span style="font-weight:500;color:#333;">解放済み</span></div>
+      <div class="lrow"><div class="ldot" style="background:#DDEED8;border:1px solid #d1d5db;opacity:.6;"></div><span style="font-weight:500;color:var(--s400);font-size:.625rem;">未解放</span></div>
+    </div>
+    <div class="pov hidden" id="pOv">
+      <div class="povh">
+        <div><span class="povlbl">都道府県</span><div class="povn" id="ovN"></div><div class="povk" id="ovK"></div></div>
+        <div style="text-align:right;"><span class="povlbl">県庁所在地</span><div class="povc" id="ovC"></div><div class="povck" id="ovCK"></div></div>
+      </div>
+      <div class="sbox"><span class="povlbl" style="margin-bottom:8px;">とくさんぶつ</span><div class="sn" id="ovS"></div></div>
+      <button class="pcls" onclick="closePov()">✕</button>
+    </div>
+  </div>
+  <div class="nu">
+    <div class="nut"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>次の解放まで</div>
+    <div class="nubw"><div class="nub" id="nuB" style="width:0%"></div></div>
+    <p class="num" id="nuM"></p>
+  </div>
+</div>
+
+<!-- TEST -->
+<div id="sT" class="screen hidden">
+  <div class="thdr">
+    <button class="bbk" onclick="setMode('list')"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>一覧に戻る</button>
+    <div class="pg"><div class="pm"><div class="pmf" id="tBar" style="width:0%"></div></div><span class="plbl" id="tLbl">1 / 1</span></div>
+  </div>
+  <div class="tc">
+    <div id="tQ">
+      <div class="thint">ノートに書いてください</div>
+      <div class="trd" id="tRd"></div>
+      <button class="bshow" onclick="showAns()">答えを表示</button>
+    </div>
+    <div id="tAns" class="hidden" style="width:100%;text-align:center;">
+      <div class="thint">正解</div>
+      <div class="ak" id="aK"></div>
+      <div class="ar" id="aR"></div>
+      <div class="abtns">
+        <button class="bw" onclick="handleAns(false)"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>間違えた</button>
+        <button class="bc" onclick="handleAns(true)"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>正解！</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="sR" class="screen hidden">
+  <div class="res">
+    <div class="rej">🌊</div>
+    <h2 class="ret">素晴らしい挑戦！</h2>
+    <p class="res2">一歩ずつ、着実に。あなたの努力は裏切りません。</p>
+    <div class="recard"><div class="relbl">今回の苦手漢字</div><div class="rems" id="rMis"></div></div>
+    <button class="bbr" onclick="setMode('list')">一覧に戻る</button>
+  </div>
+</div>
+
+</div><!-- .app -->
+
+<!-- Confirm Modal -->
+<div class="mov hidden" id="cMov">
+  <div class="mbox">
+    <div class="mhd"><div class="mic danger" id="mIco"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="mtit" id="mTit"></div></div>
+    <div class="mmsg" id="mMsg"></div>
+    <div class="mbtns"><button class="mca" onclick="closeMov()">キャンセル</button><button class="mco danger" id="mCon2" onclick="execMov()">実行する</button></div>
+  </div>
+</div>
+
+<!-- Unlock Modal -->
+<div class="uov hidden" id="uMov">
+  <div class="ubox">
+    <div class="udeco"></div><span class="sk1">🌸</span><span class="sk2">🌸</span><span class="sk3">🌸</span>
+    <div class="ucnt">
+      <div class="uico">📍</div>
+      <div class="usub">新しい県が解放されました！</div>
+      <span class="uname" id="uN"></span><span class="ukana" id="uK"></span>
+      <span class="ucaplbl">県庁所在地</span><span class="ucap" id="uC"></span><span class="ucapk" id="uCK"></span>
+      <div class="uspbox"><span class="usplbl">とくさんぶつ</span><span class="usp" id="uSp"></span></div>
+      <button class="bmap" onclick="closeUnlock()">地図で見る！</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PREFS=[
+  {id:1,name:'北海道',nameKana:'ほっかいどう',capital:'札幌市',capitalKana:'さっぽろし',specialty:'蟹・メロン 🦀🍈',x:9,y:0},
+  {id:2,name:'青森県',nameKana:'あおもりけん',capital:'青森市',capitalKana:'あおもりし',specialty:'林檎 🍎',x:9,y:2},
+  {id:5,name:'秋田県',nameKana:'あきたけん',capital:'秋田市',capitalKana:'あきたし',specialty:'切蒲英 🍲',x:8,y:3},
+  {id:3,name:'岩手県',nameKana:'いわてけん',capital:'盛岡市',capitalKana:'もりおかし',specialty:'椀飯蕎麦 🍜',x:9,y:3},
+  {id:6,name:'山形県',nameKana:'やまがたけん',capital:'山形市',capitalKana:'やまがたし',specialty:'桜桃 🍒',x:8,y:4},
+  {id:4,name:'宮城県',nameKana:'みやぎけん',capital:'仙台市',capitalKana:'せんだいし',specialty:'牛タン 🐮',x:9,y:4},
+  {id:7,name:'福島県',nameKana:'ふくしまけん',capital:'福島市',capitalKana:'ふくしまし',specialty:'桃 🍑',x:9,y:5},
+  {id:10,name:'群馬県',nameKana:'ぐんまけん',capital:'前橋市',capitalKana:'まえばしし',specialty:'蒟蒻 🥗',x:8,y:6},
+  {id:9,name:'栃木県',nameKana:'とちぎけん',capital:'宇都宮市',capitalKana:'うつのみやし',specialty:'餃子 🥟',x:9,y:6},
+  {id:11,name:'埼玉県',nameKana:'さいたまけん',capital:'さいたま市',capitalKana:'さいたまし',specialty:'草加煎餅 🍘',x:8,y:7},
+  {id:8,name:'茨城県',nameKana:'いばらきけん',capital:'水戸市',capitalKana:'みとし',specialty:'納豆 🍚',x:9,y:7},
+  {id:13,name:'東京都',nameKana:'とうきょうと',capital:'新宿区',capitalKana:'しんじゅくく',specialty:'文字焼き 🥘',x:8,y:8},
+  {id:12,name:'千葉県',nameKana:'ちばけん',capital:'千葉市',capitalKana:'ちばし',specialty:'落花生 🥜',x:9,y:8},
+  {id:14,name:'神奈川県',nameKana:'かながわけん',capital:'横浜市',capitalKana:'よこはまし',specialty:'焼売 🥟',x:8,y:9},
+  {id:15,name:'新潟県',nameKana:'にいがたけん',capital:'新潟市',capitalKana:'にいがたし',specialty:'米 🌾',x:7,y:5},
+  {id:16,name:'富山県',nameKana:'とやまけん',capital:'富山市',capitalKana:'とやまし',specialty:'蛍烏賊 🦑',x:6,y:6},
+  {id:20,name:'長野県',nameKana:'ながのけん',capital:'長野市',capitalKana:'ながのし',specialty:'信州蕎麦・林檎 🍜🍎',x:7,y:6},
+  {id:17,name:'石川県',nameKana:'いしかわけん',capital:'金沢市',capitalKana:'かなざわし',specialty:'金箔ソフト 🍦',x:5,y:6},
+  {id:18,name:'福井県',nameKana:'ふくいけん',capital:'福井市',capitalKana:'ふくいし',specialty:'越前蟹 🦀',x:5,y:7},
+  {id:21,name:'岐阜県',nameKana:'ぎふけん',capital:'岐阜市',capitalKana:'ぎふし',specialty:'飛騨牛 🥩',x:6,y:7},
+  {id:19,name:'山梨県',nameKana:'やまなしけん',capital:'甲府市',capitalKana:'こうふし',specialty:'葡萄・餺飥 🍇🍲',x:7,y:7},
+  {id:23,name:'愛知県',nameKana:'あいちけん',capital:'名古屋市',capitalKana:'なごやし',specialty:'手羽先 🍗',x:6,y:8},
+  {id:22,name:'静岡県',nameKana:'しずおかけん',capital:'静岡市',capitalKana:'しずおかし',specialty:'茶・鰻 🍵🐍',x:7,y:8},
+  {id:25,name:'滋賀県',nameKana:'しがけん',capital:'大津市',capitalKana:'おおつし',specialty:'近江牛 🥩',x:5,y:8},
+  {id:26,name:'京都府',nameKana:'きょうとふ',capital:'京都市',capitalKana:'きょうとし',specialty:'八つ橋 🍡',x:4,y:7},
+  {id:24,name:'三重県',nameKana:'みえけん',capital:'津市',capitalKana:'つし',specialty:'松阪牛・伊勢海老 🥩🦞',x:5,y:9},
+  {id:27,name:'大阪府',nameKana:'おおさかふ',capital:'大阪市',capitalKana:'おおさかし',specialty:'蛸焼き 🐙',x:4,y:8},
+  {id:29,name:'奈良県',nameKana:'ならけん',capital:'奈良市',capitalKana:'ならし',specialty:'柿の葉寿司 🍣',x:4,y:9},
+  {id:28,name:'兵庫県',nameKana:'ひょうごけん',capital:'神戸市',capitalKana:'こうべし',specialty:'神戸牛 🥩',x:3,y:7},
+  {id:30,name:'和歌山県',nameKana:'わかやまけん',capital:'和歌山市',capitalKana:'わかやまし',specialty:'蜜柑 🍊',x:3,y:9},
+  {id:31,name:'鳥取県',nameKana:'とっとりけん',capital:'鳥取市',capitalKana:'とっとりし',specialty:'梨 🍐',x:2,y:7},
+  {id:32,name:'島根県',nameKana:'しまねけん',capital:'松江市',capitalKana:'まつえし',specialty:'蜆 🐚',x:1,y:7},
+  {id:33,name:'岡山県',nameKana:'おかやまけん',capital:'岡山市',capitalKana:'おかやまし',specialty:'吉備団子・桃 🍡🍑',x:2,y:8},
+  {id:34,name:'広島県',nameKana:'ひろしまけん',capital:'広島市',capitalKana:'ひろしまし',specialty:'御好焼き・牡蠣 🥘🦪',x:1,y:8},
+  {id:35,name:'山口県',nameKana:'やまぐちけん',capital:'山口市',capitalKana:'やまぐちし',specialty:'河豚 🐡',x:0,y:8},
+  {id:37,name:'香川県',nameKana:'かがわけん',capital:'高松市',capitalKana:'たかまつし',specialty:'饂飩 🍜',x:2,y:10},
+  {id:36,name:'徳島県',nameKana:'とくしまけん',capital:'徳島市',capitalKana:'とくしまし',specialty:'酢橘 🍏',x:2,y:11},
+  {id:38,name:'愛媛県',nameKana:'えひめけん',capital:'松山市',capitalKana:'まつやまし',specialty:'蜜柑 🍊',x:1,y:10},
+  {id:39,name:'高知県',nameKana:'こうちけん',capital:'高知市',capitalKana:'こうちし',specialty:'鰹の叩き 🐟',x:1,y:11},
+  {id:40,name:'福岡県',nameKana:'ふくおかけん',capital:'福岡市',capitalKana:'ふくおかし',specialty:'明太子・拉麺 🌶️🍜',x:0,y:10},
+  {id:44,name:'大分県',nameKana:'おおいたけん',capital:'大分市',capitalKana:'おおいたし',specialty:'臭橙 🍏',x:0,y:11},
+  {id:41,name:'佐賀県',nameKana:'さがけん',capital:'佐賀市',capitalKana:'さがし',specialty:'佐賀牛 🥩',x:-1,y:11},
+  {id:42,name:'長崎県',nameKana:'ながさきけん',capital:'長崎市',capitalKana:'ながさきし',specialty:'カステラ 🍰',x:-1,y:12},
+  {id:43,name:'熊本県',nameKana:'くまもとけん',capital:'熊本市',capitalKana:'くまもとし',specialty:'馬刺し・西瓜 🥩🍉',x:0,y:12},
+  {id:45,name:'宮崎県',nameKana:'みやざきけん',capital:'宮崎市',capitalKana:'みやざきし',specialty:'芒果 🥭',x:0,y:13},
+  {id:46,name:'鹿児島県',nameKana:'かごしまけん',capital:'鹿児島市',capitalKana:'かごしまし',specialty:'黒豚・薩摩芋 🐷🍠',x:-1,y:13},
+  {id:47,name:'沖縄県',nameKana:'おきなわけん',capital:'那覇市',capitalKana:'なはし',specialty:'苦瓜・鳳梨 🥒🍍',x:-3,y:13},
+];
+const sr=s=>{const x=Math.sin(s)*10000;return x-Math.floor(x);};
+const SH=[...PREFS].sort((a,b)=>sr(a.id)-sr(b.id));
+
+let cards=[],mode='list',ttype='normal',cidx=0,sAnsF=false,tq=[];
+let dc=0,lu=0,eid=null,mcb=null;
+const GOAL=20;
+
+window.addEventListener('DOMContentLoaded',()=>{load();buildMap();buildPetals();setupDrag();render();});
+
+function load(){
+  try{const s=localStorage.getItem('kanji-cards');if(s)cards=JSON.parse(s).map(c=>({...c,mistakeCount:c.mistakeCount??0,correctCount:c.correctCount??0}));}catch(e){}
+  const today=new Date().toLocaleDateString();
+  if(localStorage.getItem('kanji-daily-date')===today)dc=Number(localStorage.getItem('kanji-daily-count'))||0;
+  else{localStorage.setItem('kanji-daily-date',today);localStorage.setItem('kanji-daily-count','0');dc=0;}
+  lu=Number(localStorage.getItem('kanji-last-unlock-count'))||0;
+  if(localStorage.getItem('kanji-test-mode')==='test'){
+    try{const q=JSON.parse(localStorage.getItem('kanji-test-queue')||'[]');if(q.length>0){tq=q;cidx=Number(localStorage.getItem('kanji-test-index'))||0;ttype=localStorage.getItem('kanji-test-type')||'normal';mode='test';}}catch(e){}
+  }
+}
+function sc(){try{localStorage.setItem('kanji-cards',JSON.stringify(cards));}catch(e){showMov('保存エラー','ブラウザの保存容量がいっぱいです。','info',null);}}
+function st(){
+  try{
+    if(tq.length>0){localStorage.setItem('kanji-test-queue',JSON.stringify(tq));localStorage.setItem('kanji-test-index',String(cidx));localStorage.setItem('kanji-test-type',ttype);}
+    else{['kanji-test-queue','kanji-test-index','kanji-test-type'].forEach(k=>localStorage.removeItem(k));}
+    mode==='test'?localStorage.setItem('kanji-test-mode','test'):localStorage.removeItem('kanji-test-mode');
+  }catch(e){}
+}
+
+function calcS(){
+  const tot=cards.length,inc=cards.filter(c=>c.isIncorrect).length;
+  const tc=cards.reduce((a,c)=>a+c.correctCount,0),tm=cards.reduce((a,c)=>a+c.mistakeCount,0);
+  const acc=tc+tm>0?Math.round(tc/(tc+tm)*100):0;
+  const mas=[
+    {n:'習得済み',v:cards.filter(c=>c.correctCount>3&&c.mistakeCount===0).length,c:'#059669'},
+    {n:'学習中',v:cards.filter(c=>c.correctCount>0&&c.correctCount<=3).length,c:'#0ea5e9'},
+    {n:'未着手/苦手',v:cards.filter(c=>c.correctCount===0||c.isIncorrect).length,c:'#e11d48'},
+  ].filter(d=>d.v>0);
+  const top=[...cards].filter(c=>c.mistakeCount>0).sort((a,b)=>b.mistakeCount-a.mistakeCount).slice(0,5).map(c=>({n:c.kanji,m:c.mistakeCount}));
+  return{tot,inc,acc,mas,top,tc,tm,ul:Math.floor(tc/5)};
+}
+
+function render(){
+  const s=calcS();
+  // screens
+  ['sL','sD','sM','sT','sR'].forEach((id,i)=>{
+    document.getElementById(id).classList.toggle('hidden',mode!==['list','dashboard','map','test','result'][i]);
+  });
+  renderHdr(s);
+  if(mode==='list')renderList(s);
+  if(mode==='dashboard')renderDash(s);
+  if(mode==='map')renderMap(s);
+  if(mode==='test')renderTest();
+  if(mode==='result')renderResult();
+  st();checkUnlock(s);
+}
+
+function renderHdr(s){
+  document.getElementById('btnMap').classList.toggle('on',mode==='map');
+  const db=document.getElementById('btnDash');db.classList.toggle('on',mode==='dashboard');
+  db.innerHTML=mode==='dashboard'
+    ?'<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>'
+    :'<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>';
+}
+
+function renderList(s){
+  const isNR=ttype==='normal'&&tq.length>0&&cidx<tq.length;
+  const isRR=ttype==='incorrect'&&tq.length>0&&cidx<tq.length;
+  const tb=document.getElementById('btnT'),rb=document.getElementById('btnR');
+  tb.textContent=isNR?'テストを再開':'今日のテスト';tb.className='btn btn-t'+(isNR?' resume':'');
+  rb.disabled=cards.filter(c=>c.isIncorrect||c.mistakeCount>0).length===0;rb.className='btn btn-r'+(isRR?' resume':'');
+  rb.innerHTML=`<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>${isRR?'復習を再開':'復習'}`;
+  const p=Math.min((dc/GOAL)*100,100);
+  document.getElementById('dLbl').textContent=`${dc} / ${GOAL}`;
+  document.getElementById('dBar').style.width=p+'%';
+  document.getElementById('dMsg').textContent=dc>=GOAL?'目標達成！お疲れ様でした。✨':`あと ${GOAL-dc} 問で目標達成です。`;
+  document.getElementById('btnA').innerHTML=eid
+    ?'<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>編集をキャンセル'
+    :'<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>漢字登録';
+  document.getElementById('sTot').textContent=s.tot;
+  document.getElementById('sBad').textContent=s.inc;
+  document.getElementById('sAcc').textContent=s.acc+'%';
+  document.getElementById('lHdr').textContent=`登録済み (${cards.length})`;
+  document.getElementById('bRS').classList.toggle('hidden',!cards.some(c=>c.mistakeCount>0));
+  renderKList();
+}
+function renderKList(){
+  const el=document.getElementById('kList');
+  if(!cards.length){el.innerHTML='<div class="kempty">漢字が登録されていません</div>';return;}
+  el.innerHTML=cards.map(c=>`
+    <div class="ki2 ${c.isIncorrect?'bad':''}">
+      <div class="kinfo">
+        <div class="kmain"><span class="kchar">${c.kanji}</span><span class="kread">(${esc(c.reading)})</span></div>
+        <div class="kstats">
+          <span class="kok"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>${c.correctCount}</span>
+          <span class="kng"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>${c.mistakeCount}</span>
+        </div>
+      </div>
+      <div class="kact">
+        ${c.isIncorrect?'<span class="bbad">苦手</span>':''}
+        <button class="ibtn ed" onclick="startEdit('${c.id}')"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="ibtn dl" onclick="delCard('${c.id}')"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+      </div>
+    </div>`).join('');
+}
+
+function renderDash(s){
+  document.getElementById('pieLbl').textContent=s.acc+'%';
+  document.getElementById('bDT').disabled=!cards.length;
+  drawPie(s.tc,s.tm);
+  document.getElementById('mlist').innerHTML=s.mas.length
+    ?s.mas.map(d=>`<div class="mrow"><span class="mn"><span class="mdot" style="background:${d.c};"></span>${d.n}</span><span class="mv">${d.v}</span></div>`).join('')
+    :'<div style="text-align:center;color:var(--s400);font-size:.75rem;font-style:italic;padding:16px 0;">データがありません</div>';
+  document.getElementById('tlist').innerHTML=s.top.length
+    ?s.top.map((t,i)=>`<div class="trow"><div class="rb ${['r1','r2','r3','rn','rn'][i]}">${i+1}</div><div class="tk">${t.n}</div><div class="bw2"><div class="bb"><div class="bf" style="width:${(t.m/s.top[0].m)*100}%"></div></div><span class="bc2">${t.m}</span></div></div>`).join('')
+    :'<div style="text-align:center;padding:32px;color:var(--s400);font-size:.85rem;font-style:italic;">まだ間違いのデータがありません</div>';
+  const rv=cards.filter(c=>c.isIncorrect||c.mistakeCount>2);
+  document.getElementById('rvlist').innerHTML=rv.length
+    ?rv.map(c=>`<div class="rit"><span class="rk">${c.kanji}</span><span class="rbg">${c.mistakeCount}回ミス</span></div>`).join('')
+    :'<p style="color:var(--s400);font-size:.85rem;font-style:italic;">現在、復習が必要な漢字はありません。</p>';
+}
+function drawPie(tc,tm){
+  const cv=document.getElementById('pie'),ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,160,160);
+  const tot=tc+tm;
+  if(!tot){ctx.beginPath();ctx.arc(80,80,60,0,Math.PI*2);ctx.strokeStyle='#e2e8f0';ctx.lineWidth=22;ctx.stroke();return;}
+  const a=(tc/tot)*Math.PI*2;
+  ctx.beginPath();ctx.arc(80,80,60,0,Math.PI*2);ctx.strokeStyle='#e11d48';ctx.lineWidth=22;ctx.stroke();
+  ctx.beginPath();ctx.arc(80,80,60,-Math.PI/2,-Math.PI/2+a);ctx.strokeStyle='#059669';ctx.lineWidth=22;ctx.stroke();
+}
+
+function renderMap(s){
+  document.getElementById('mCnt').textContent=`${s.ul} / 47 都道府県`;
+  document.getElementById('nuB').style.width=((s.tc%5)/5)*100+'%';
+  document.getElementById('nuM').textContent=s.ul<47?`あと ${5-(s.tc%5)} 問正解で新しい県が解放されます！`:'すべての県を解放しました！おめでとう！';
+  updMap(s.ul);applyT();
+}
+function renderTest(){
+  if(!tq[cidx])return;
+  const c=tq[cidx];
+  document.getElementById('tBar').style.width=(cidx/tq.length)*100+'%';
+  document.getElementById('tLbl').textContent=`${cidx+1} / ${tq.length}`;
+  if(!sAnsF){
+    document.getElementById('tQ').classList.remove('hidden');document.getElementById('tAns').classList.add('hidden');
+    document.getElementById('tRd').innerHTML=mkR(c.reading,c.kanji);
+  }else{
+    document.getElementById('tQ').classList.add('hidden');document.getElementById('tAns').classList.remove('hidden');
+    document.getElementById('aK').textContent=c.kanji;document.getElementById('aR').innerHTML=mkR(c.reading,c.kanji);
+  }
+}
+function renderResult(){
+  const bad=tq.filter(q=>cards.find(c=>c.id===q.id)?.isIncorrect);
+  document.getElementById('rMis').innerHTML=bad.length
+    ?bad.map(q=>`<span class="remb">${q.kanji}</span>`).join('')
+    :'<div class="perf"><span class="big">パーフェクト！✨</span><span class="sm">この調子で頑張りましょう！</span></div>';
+}
+
+// Map
+const CS=40,GP=4,SP=CS+GP;
+let ms=0.6,mx=0,my=0,dr=false,dsx,dsy,dix,diy;
+function buildMap(){
+  const a=document.getElementById('mDrag');
+  const xs=PREFS.map(p=>p.x),ys=PREFS.map(p=>p.y);
+  const mnx=Math.min(...xs),mxx=Math.max(...xs),mny=Math.min(...ys),mxy=Math.max(...ys);
+  const mw=(mxx-mnx+1)*SP,mh=(mxy-mny+1)*SP;
+  a.style.width=mw+'px';a.style.height=mh+'px';
+  SH.forEach((p,i)=>{
+    const b=document.createElement('button');
+    b.className=`pb lk${p.id===1?' hk':''}`;b.id='pb'+p.id;
+    b.style.left=(p.x-mnx)*SP+'px';b.style.top=(p.y-mny)*SP+'px';
+    b.innerHTML=p.id===1?'<span style="font-size:1.3rem">🌸</span><span>北海道</span>':p.name.slice(0,2);
+    b.dataset.i=i;b.addEventListener('click',()=>{const s=calcS();if(i<s.ul)showPov(p);});
+    a.appendChild(b);
+  });
+  const con=document.getElementById('mCon');
+  mx=(con.offsetWidth-mw*ms)/2;my=(con.offsetHeight-mh*ms)/2;
+}
+function updMap(uc){SH.forEach((p,i)=>{const b=document.getElementById('pb'+p.id);if(!b)return;const u=i<uc;b.className=`pb${u?' ul':' lk'}${p.id===1?' hk':''}`;if(p.id===1)b.innerHTML=u?'<span style="font-size:1.3rem">🌸</span><span>北海道</span>':'北海道';});}
+function applyT(){const a=document.getElementById('mDrag');a.style.transform=`translate(${mx}px,${my}px) scale(${ms})`;a.style.transformOrigin='0 0';}
+function mZoom(d){
+  const con=document.getElementById('mCon'),old=ms;ms=Math.min(Math.max(ms+d,.3),2);
+  const cx=con.offsetWidth/2,cy=con.offsetHeight/2;mx=cx-(cx-mx)*(ms/old);my=cy-(cy-my)*(ms/old);applyT();
+}
+function mReset(){
+  const con=document.getElementById('mCon'),a=document.getElementById('mDrag');ms=0.6;
+  mx=(con.offsetWidth-parseInt(a.style.width)*ms)/2;my=(con.offsetHeight-parseInt(a.style.height)*ms)/2;applyT();
+}
+function setupDrag(){
+  const con=document.getElementById('mCon');
+  con.addEventListener('mousedown',e=>{if(e.target.classList.contains('pb'))return;dr=true;dsx=e.clientX;dsy=e.clientY;dix=mx;diy=my;con.style.cursor='grabbing';e.preventDefault();});
+  document.addEventListener('mousemove',e=>{if(!dr)return;mx=dix+(e.clientX-dsx);my=diy+(e.clientY-dsy);applyT();});
+  document.addEventListener('mouseup',()=>{dr=false;document.getElementById('mCon').style.cursor='';});
+  con.addEventListener('touchstart',e=>{if(e.touches.length===1&&!e.target.classList.contains('pb')){dr=true;dsx=e.touches[0].clientX;dsy=e.touches[0].clientY;dix=mx;diy=my;}},{passive:true});
+  con.addEventListener('touchmove',e=>{if(!dr||e.touches.length!==1)return;mx=dix+(e.touches[0].clientX-dsx);my=diy+(e.touches[0].clientY-dsy);applyT();e.preventDefault();},{passive:false});
+  con.addEventListener('touchend',()=>{dr=false;});
+}
+function buildPetals(){
+  const box=document.getElementById('petalBox');
+  for(let i=0;i<15;i++){
+    const p=document.createElement('div');p.className='petal';
+    const r=s=>{const x=Math.sin(s)*10000;return x-Math.floor(x);};
+    p.style.cssText=`left:${20+r(i*7+5)*60}%;font-size:${12+r(i*7+4)*12}px;animation-duration:${8+r(i*7+3)*7}s;animation-delay:${i*1.5}s;`;
+    p.textContent='🌸';box.appendChild(p);
+  }
+}
+function showPov(p){
+  document.getElementById('ovN').textContent=p.name;document.getElementById('ovK').textContent=p.nameKana;
+  document.getElementById('ovC').textContent=p.capital;document.getElementById('ovCK').textContent=p.capitalKana;
+  document.getElementById('ovS').textContent=p.specialty;document.getElementById('pOv').classList.remove('hidden');
+}
+function closePov(){document.getElementById('pOv').classList.add('hidden');}
+
+// Actions
+function setMode(m){mode=m;if(m!=='test')sAnsF=false;render();}
+function toggleMap(){setMode(mode==='map'?'list':'map');}
+function toggleDash(){setMode(mode==='dashboard'?'list':'dashboard');}
+function toggleForm(){
+  if(eid){cancelEdit();return;}
+  const f=document.getElementById('formBox');f.classList.toggle('hidden');
+  if(!f.classList.contains('hidden'))document.getElementById('iS').focus();
+}
+function toggleList(){
+  const w=document.getElementById('listWrap'),b=document.getElementById('bLT');
+  w.classList.toggle('hidden');
+  b.innerHTML=w.classList.contains('hidden')
+    ?'<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>登録済み漢字を確認・編集'
+    :'<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>閉じる';
+}
+function submitForm(){
+  const s=document.getElementById('iS').value,t=document.getElementById('iT').value,k=document.getElementById('iK').value;
+  if(!k||!s)return;
+  const r2=t.trim()?s.trim().includes(t.trim())?s.trim().replace(t.trim(),`[${t.trim()}]`):`[${t.trim()}] ${s.trim()}`:s.trim();
+  if(eid){cards=cards.map(c=>c.id===eid?{...c,kanji:k.trim(),reading:r2}:c);sc();cancelEdit();}
+  else{cards.push({id:uid(),kanji:k.trim(),reading:r2,meaning:'',isIncorrect:false,mistakeCount:0,correctCount:0});sc();['iS','iT','iK'].forEach(i=>document.getElementById(i).value='');document.getElementById('formBox').classList.add('hidden');}
+  render();
+}
+function startEdit(id){
+  const c=cards.find(x=>x.id===id);if(!c)return;eid=id;
+  const m=c.reading.match(/\[(.*?)\]/);
+  document.getElementById('iT').value=m?m[1]:'';document.getElementById('iS').value=c.reading.replace(/\[|\]/g,'');document.getElementById('iK').value=c.kanji;
+  document.getElementById('formBox').classList.remove('hidden');document.getElementById('bCE').classList.remove('hidden');
+  document.getElementById('bSub').innerHTML='<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>更新する';
+  document.getElementById('ftitle').innerHTML='<svg width="24" height="24" fill="none" stroke="var(--sky)" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>漢字編集';
+  window.scrollTo({top:0,behavior:'smooth'});render();
+}
+function cancelEdit(){
+  eid=null;['iS','iT','iK'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('formBox').classList.add('hidden');document.getElementById('bCE').classList.add('hidden');
+  document.getElementById('bSub').innerHTML='<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>保存する';
+  document.getElementById('ftitle').innerHTML='<svg width="24" height="24" fill="none" stroke="var(--sky)" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>漢字登録';
+  render();
+}
+function delCard(id){showMov('漢字の削除','この漢字を削除してもよろしいですか？この操作は取り消せません。','danger',()=>{cards=cards.filter(c=>c.id!==id);sc();render();});}
+function resetStats(){showMov('統計のリセット','すべての学習記録（正解数・間違い数）をリセットします。よろしいですか？','danger',()=>{cards=cards.map(c=>({...c,isIncorrect:false,mistakeCount:0,correctCount:0}));sc();render();});}
+function startTest(o=false){
+  const type=o?'incorrect':'normal';
+  if(ttype===type&&tq.length>0&&cidx<tq.length){mode='test';sAnsF=false;render();return;}
+  ttype=type;
+  tq=o?[...cards].filter(c=>c.isIncorrect||c.mistakeCount>0).sort((a,b)=>b.mistakeCount-a.mistakeCount).slice(0,20):[...cards].sort(()=>Math.random()-.5).slice(0,20);
+  if(!tq.length)return;cidx=0;sAnsF=false;mode='test';render();
+}
+function showAns(){sAnsF=true;renderTest();}
+function handleAns(ok){
+  dc++;try{localStorage.setItem('kanji-daily-count',String(dc));}catch(e){}
+  const c=tq[cidx];
+  cards=cards.map(x=>x.id===c.id?{...x,isIncorrect:!ok,mistakeCount:ok?x.mistakeCount:x.mistakeCount+1,correctCount:ok?x.correctCount+1:x.correctCount}:x);
+  sc();cidx<tq.length-1?(cidx++,sAnsF=false,render()):(mode='result',render());
+}
+function checkUnlock(s){
+  if(s.ul>lu){const idx=Math.min(s.ul-1,SH.length-1);if(idx>=0)showUnlock(SH[idx]);lu=s.ul;try{localStorage.setItem('kanji-last-unlock-count',String(lu));}catch(e){}}
+}
+function showUnlock(p){
+  document.getElementById('uN').textContent=p.name;document.getElementById('uK').textContent=p.nameKana;
+  document.getElementById('uC').textContent=p.capital;document.getElementById('uCK').textContent=p.capitalKana;
+  document.getElementById('uSp').textContent=p.specialty;document.getElementById('uMov').classList.remove('hidden');
+}
+function closeUnlock(){document.getElementById('uMov').classList.add('hidden');setMode('map');}
+function showMov(t,m,tp,cb){
+  document.getElementById('mTit').textContent=t;document.getElementById('mMsg').textContent=m;
+  const ic=document.getElementById('mIco'),cn=document.getElementById('mCon2');
+  ic.className=`mic ${tp}`;cn.className=`mco ${tp}`;
+  ic.innerHTML=tp==='danger'?'<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>':'<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+  mcb=cb;document.getElementById('cMov').classList.remove('hidden');
+}
+function closeMov(){document.getElementById('cMov').classList.add('hidden');mcb=null;}
+function execMov(){if(mcb)mcb();closeMov();}
+
+// helpers
+function uid(){return crypto?.randomUUID?.()||Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escR(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+function mkR(text,kanji){
+  if(text.includes('[')){return text.split(/(\[.*?\])/).map(p=>p.startsWith('[')&&p.endsWith(']')?`<span class="ul">${esc(p.slice(1,-1))}</span>`:esc(p)).join('');}
+  if(kanji&&text.includes(kanji)){return text.split(new RegExp(`(${escR(kanji)})`,'g')).map(p=>p===kanji?`<span class="ul">${esc(p)}</span>`:esc(p)).join('');}
+  return`<span class="ul">${esc(text)}</span>`;
+}
+</script>
+</body>
+</html>
